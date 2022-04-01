@@ -1,7 +1,7 @@
 const Transport = require('winston-transport');
 const Sequelize = require('sequelize');
 const assert = require('assert');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const Op = Sequelize.Op;
 
 const logsSchema = {
