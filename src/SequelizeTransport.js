@@ -110,6 +110,7 @@ class SequelizeTransport extends Transport {
       dialectOptions: {
         encrypt: opts.database.encrypt || true,
       },
+      logging: false,
     };
     if (opts.database.pool) {
       dbOpts.pool = opts.database.pool;
