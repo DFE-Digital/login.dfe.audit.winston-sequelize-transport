@@ -28,7 +28,7 @@
   "dependencies": {
     "lodash": "^4.17.15",
     "sequelize": "^6.3.3",
-    "tedious": "^16.4.0",
+    "tedious": "^18.2.1",
     "uuid": "^9.0.0",
     "winston-transport": "^4.5.0"
   }
