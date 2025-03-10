@@ -60,4 +60,5 @@ typings/
 #dev env
 .idea/workspace.xml
 .idea/watcherTasks.xml
-.eslint-results.xml
+eslint-results.xml
+junit.xml
