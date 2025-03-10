@@ -16,7 +16,6 @@ describe("When getting the winston sequelize transport ", () => {
     expect(actual).toBeNull();
   });
   it("then the transport object is returned if the config is correctly set", () => {
-    const nothing;
     const winstonMock = require("./../src/SequelizeTransport");
 
     const configObject = {
