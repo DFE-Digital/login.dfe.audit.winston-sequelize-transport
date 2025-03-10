@@ -1,5 +1,3 @@
-"use strict";
-
 const Sequelize = require("sequelize");
 const SequelizeTransport = require("./SequelizeTransport");
 const assert = require("assert");
