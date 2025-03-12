@@ -1,8 +1,6 @@
-'use strict';
-
-const Sequelize = require('sequelize');
-const SequelizeTransport = require('./SequelizeTransport');
-const assert = require('assert');
+const Sequelize = require("sequelize");
+const SequelizeTransport = require("./SequelizeTransport");
+const assert = require("assert");
 
 const getIntValueOrDefault = (value, defaultValue = 0) => {
   if (!value) {
@@ -13,19 +11,32 @@ const getIntValueOrDefault = (value, defaultValue = 0) => {
 };
 
 const getWinstonSequelizeTransport = (config) => {
-
-  if (!config.loggerSettings.auditDb || !config.loggerSettings.auditDb.username) {
+  if (
+    !config.loggerSettings.auditDb ||
+    !config.loggerSettings.auditDb.username
+  ) {
     return null;
   }
 
-  const databaseName = config.loggerSettings.auditDb.name || 'postgres';
+  const databaseName = config.loggerSettings.auditDb.name || "postgres";
   const encryptDb = config.loggerSettings.auditDb.encrypt || true;
 
-  assert(config.loggerSettings.auditDb.username, 'Audit Database property username must be supplied');
-  assert(config.loggerSettings.auditDb.password, 'Audit Database property password must be supplied');
-  assert(config.loggerSettings.auditDb.host, 'Audit Database property host must be supplied');
-  assert(config.loggerSettings.auditDb.dialect, 'Audit Database property dialect must be supplied, this must be postgres or mssql');
-
+  assert(
+    config.loggerSettings.auditDb.username,
+    "Audit Database property username must be supplied",
+  );
+  assert(
+    config.loggerSettings.auditDb.password,
+    "Audit Database property password must be supplied",
+  );
+  assert(
+    config.loggerSettings.auditDb.host,
+    "Audit Database property host must be supplied",
+  );
+  assert(
+    config.loggerSettings.auditDb.dialect,
+    "Audit Database property dialect must be supplied, this must be postgres or mssql",
+  );
 
   const options = {
     database: {
@@ -36,10 +47,10 @@ const getWinstonSequelizeTransport = (config) => {
       dialect: config.loggerSettings.auditDb.dialect,
       encrypt: encryptDb,
     },
-    tableName: 'AuditLogs',
+    tableName: "AuditLogs",
     fields: { meta: Sequelize.JSONB },
     modelOptions: { timestamps: true },
-    level: 'audit',
+    level: "audit",
     application: config.loggerSettings.applicationName,
     environment: config.hostingEnvironment.env,
   };
@@ -48,8 +59,14 @@ const getWinstonSequelizeTransport = (config) => {
     options.database.pool = {
       max: getIntValueOrDefault(config.loggerSettings.auditDb.pool.max, 5),
       min: getIntValueOrDefault(config.loggerSettings.auditDb.pool.min, 0),
-      acquire: getIntValueOrDefault(config.loggerSettings.auditDb.pool.acquire, 10000),
-      idle: getIntValueOrDefault(config.loggerSettings.auditDb.pool.idle, 10000),
+      acquire: getIntValueOrDefault(
+        config.loggerSettings.auditDb.pool.acquire,
+        10000,
+      ),
+      idle: getIntValueOrDefault(
+        config.loggerSettings.auditDb.pool.idle,
+        10000,
+      ),
     };
   }
 

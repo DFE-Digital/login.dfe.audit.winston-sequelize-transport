@@ -1,8 +1,7 @@
-const Transport = require('winston-transport');
-const Sequelize = require('sequelize');
-const assert = require('assert');
-const {v4:uuid} = require('uuid');
-const Op = Sequelize.Op;
+const Transport = require("winston-transport");
+const Sequelize = require("sequelize");
+const assert = require("assert");
+const { v4: uuid } = require("uuid");
 
 const logsSchema = {
   id: {
@@ -21,7 +20,7 @@ const logsSchema = {
 };
 const defaultLogsOptions = {
   timestamps: true,
-  schema: 'dbo',
+  schema: "dbo",
   // TODO: Define indexes
 };
 const metaSchema = {
@@ -35,12 +34,20 @@ const metaSchema = {
 };
 const defaultMetaOptions = {
   timestamps: false,
-  schema: 'dbo',
+  schema: "dbo",
   // TODO: Define indexes
 };
-const keysToExcludeFromMeta = ['type', 'subType', 'userId', 'organisationId'];
+const keysToExcludeFromMeta = ["type", "subType", "userId", "organisationId"];
 
-const writeLog = async (logsModel, metaModel, level, message, meta, application, environment) => {
+const writeLog = async (
+  logsModel,
+  metaModel,
+  level,
+  message,
+  meta,
+  application,
+  environment,
+) => {
   const id = uuid();
 
   const log = await logsModel.create({
@@ -55,12 +62,11 @@ const writeLog = async (logsModel, metaModel, level, message, meta, application,
     organisationId: meta.organisationId,
   });
 
-
   const metaKeys = Object.keys(meta);
   for (let i = 0; i < metaKeys.length; i += 1) {
     const key = metaKeys[i];
 
-    if (!keysToExcludeFromMeta.find(x => x === key)) {
+    if (!keysToExcludeFromMeta.find((x) => x === key)) {
       const value = meta[key];
       const jsonify = value instanceof Object;
       await metaModel.create({
@@ -80,12 +86,21 @@ class SequelizeTransport extends Transport {
   constructor(opts) {
     super(opts);
 
-    assert(opts.database, 'Audit Database property must be supplied');
-    assert(opts.database.name, 'Audit Database property name must be supplied');
-    assert(opts.database.username, 'Audit Database property username must be supplied');
-    assert(opts.database.password, 'Audit Database property password must be supplied');
-    assert(opts.database.host, 'Audit Database property host must be supplied');
-    assert(opts.database.dialect, 'Audit Database property dialect must be supplied, this must be postgres or mssql');
+    assert(opts.database, "Audit Database property must be supplied");
+    assert(opts.database.name, "Audit Database property name must be supplied");
+    assert(
+      opts.database.username,
+      "Audit Database property username must be supplied",
+    );
+    assert(
+      opts.database.password,
+      "Audit Database property password must be supplied",
+    );
+    assert(opts.database.host, "Audit Database property host must be supplied");
+    assert(
+      opts.database.dialect,
+      "Audit Database property dialect must be supplied, this must be postgres or mssql",
+    );
 
     const dbOpts = {
       retry: {
@@ -98,7 +113,7 @@ class SequelizeTransport extends Transport {
           /SequelizeConnectionTimedOutError/,
           /TimeoutError/,
         ],
-        name: 'query',
+        name: "query",
         backoffBase: 100,
         backoffExponent: 1.1,
         timeout: 60000,
@@ -106,7 +121,6 @@ class SequelizeTransport extends Transport {
       },
       host: opts.database.host,
       dialect: opts.database.dialect,
-      operatorsAliases: Op,
       dialectOptions: {
         encrypt: opts.database.encrypt || true,
       },
@@ -116,32 +130,45 @@ class SequelizeTransport extends Transport {
       dbOpts.pool = opts.database.pool;
     }
 
-    this._db = new Sequelize(opts.database.name, opts.database.username, opts.database.password, dbOpts);
+    this._db = new Sequelize(
+      opts.database.name,
+      opts.database.username,
+      opts.database.password,
+      dbOpts,
+    );
 
     const logsOptions = Object.assign({}, defaultLogsOptions);
     if (opts.database.schema) {
       logsOptions.schema = opts.database.schema;
     }
-    this._logs = this._db.define('AuditLogs', logsSchema, logsOptions);
+    this._logs = this._db.define("AuditLogs", logsSchema, logsOptions);
 
     const metaOptions = Object.assign({}, defaultMetaOptions);
     if (opts.database.schema) {
       metaOptions.schema = opts.database.schema;
     }
-    this._meta = this._db.define('AuditLogMeta', metaSchema, metaOptions);
-    this._meta.belongsTo(this._logs, { as: 'AuditLog', foreignKey: 'auditId' });
+    this._meta = this._db.define("AuditLogMeta", metaSchema, metaOptions);
+    this._meta.belongsTo(this._logs, { as: "AuditLog", foreignKey: "auditId" });
 
     this.opts = opts;
   }
 
   log(level, message, meta, callback) {
-    writeLog(this._logs, this._meta, level, message, meta, this.opts.application, this.opts.environment)
+    writeLog(
+      this._logs,
+      this._meta,
+      level,
+      message,
+      meta,
+      this.opts.application,
+      this.opts.environment,
+    )
       .then((log) => {
-        this.emit('logged');
+        this.emit("logged");
         callback(null, log);
       })
       .catch((e) => {
-        this.emit('error', e);
+        this.emit("error", e);
         callback(e);
       });
   }

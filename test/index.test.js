@@ -1,46 +1,42 @@
-jest.mock('sequelize');
-jest.mock('./../src/SequelizeTransport');
+jest.mock("sequelize");
+jest.mock("./../src/SequelizeTransport");
 
-const index = require('./../src/index');
+const index = require("./../src/index");
 
-describe('When getting the winston sequelize transport ', () => {
-
-  it('then null is returned if the config is not set', () => {
+describe("When getting the winston sequelize transport ", () => {
+  it("then null is returned if the config is not set", () => {
     const configObject = {
-      loggerSettings:{
-        auditDb:{
-        }
-      }
+      loggerSettings: {
+        auditDb: {},
+      },
     };
 
     const actual = index(configObject);
 
     expect(actual).toBeNull();
   });
-  it('then the transport object is returned if the config is correctly set', () => {
-    const sequelizeMock = require('sequelize');
-    const winstonMock = require('./../src/SequelizeTransport');
+  it("then the transport object is returned if the config is correctly set", () => {
+    const winstonMock = require("./../src/SequelizeTransport");
 
     const configObject = {
       hostingEnvironment: {
-        env: 'test'
+        env: "test",
       },
-      loggerSettings:{
-        auditDb:{
-          name: 'test-db',
-          username: 'testPerson',
-          password: 'myPassword',
-          host: 'auditHost',
-          dialect: 'mssql',
+      loggerSettings: {
+        auditDb: {
+          name: "test-db",
+          username: "testPerson",
+          password: "myPassword",
+          host: "auditHost",
+          dialect: "mssql",
         },
-        applicationName: 'test application',
-      }
+        applicationName: "test application",
+      },
     };
-
     const actual = index(configObject);
 
     expect(actual).not.toBeNull();
     expect(winstonMock.mock.calls.length).toBe(1);
-    expect(winstonMock.mock.calls[0][0].application).toBe('test application');
+    expect(winstonMock.mock.calls[0][0].application).toBe("test application");
   });
 });
